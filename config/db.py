@@ -36,7 +36,5 @@ Session = sessionmaker(bind=engine)
 Base.metadata.create_all(engine)
 
 def get_db_session():
-    """
-    Retorna una nueva sesión de base de datos para ser utilizada en los servicios o controladores.
-    """
+
     return Session()
