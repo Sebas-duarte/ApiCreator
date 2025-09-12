@@ -5,12 +5,10 @@ from Service.product_service import ProductService
 # Crear el Blueprint
 product_bp = Blueprint("products", __name__)
 
-# Instancia de servicio (se crea una sesión de DB nueva por request)
 def get_service():
     session = get_db_session()
     return ProductService(session)
 
-# ----------------- RUTAS ----------------- #
 
 # Listar todos los productos
 @product_bp.route("/", methods=["GET"])
