@@ -1,41 +1,48 @@
-from models.band_model import Band, Album
+from models.product_models import Product, Category
 from sqlalchemy.orm import Session
 
-class BandRepository:
+class ProductRepository:
+    def __init__(self, db: Session):
+        self.db = db
 
+    # Categorías
+    def get_all_categories(self):
+        return self.db.query(Category).all()
 
-    def __init__(self, db_session: Session):
-        self.db = db_session
-
-    def get_all_bands(self):
-
-        return self.db.query(Band).all()
-
-    def get_band_by_id(self, band_id: int):
-
-        return self.db.query(Band).filter(Band.id == band_id).first()
-
-    def create_band(self, name: str):
-
-        new_band = Band(name=name)
-        self.db.add(new_band)
+    def create_category(self, nombreCategoria: str):
+        new_category = Category(nombreCategoria=nombreCategoria)
+        self.db.add(new_category)
         self.db.commit()
-        self.db.refresh(new_band)
-        return new_band
+        self.db.refresh(new_category)
+        return new_category
 
-    def update_band(self, band_id: int, name: str = None):
+    # Productos
+    def get_all_products(self):
+        return self.db.query(Product).all()
 
-        band = self.get_band_by_id(band_id)
-        if band and name:
-            band.name = name
+    def get_product_by_id(self, product_id: int):
+        return self.db.query(Product).filter(Product.idProduct == product_id).first()
+
+    def create_product(self, nombre: str, inventario: int, categoria_id: int):
+        new_product = Product(nombre=nombre, inventario=inventario, categoria_id=categoria_id)
+        self.db.add(new_product)
+        self.db.commit()
+        self.db.refresh(new_product)
+        return new_product
+
+    def update_product(self, product_id: int, nombre: str = None, inventario: int = None, categoria_id: int = None):
+        product = self.get_product_by_id(product_id)
+        if product:
+            if nombre: product.nombre = nombre
+            if inventario is not None: product.inventario = inventario
+            if categoria_id: product.categoria_id = categoria_id
             self.db.commit()
-            self.db.refresh(band)
-        return band
+            self.db.refresh(product)
+        return product
 
-    def delete_band(self, band_id: int):
-
-        band = self.get_band_by_id(band_id)
-        if band:
-            self.db.delete(band)
+    def delete_product(self, product_id: int):
+        product = self.get_product_by_id(product_id)
+        if product:
+            self.db.delete(product)
             self.db.commit()
-        return band
+        return product
