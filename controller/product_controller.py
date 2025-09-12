@@ -2,7 +2,6 @@ from flask import Blueprint, jsonify, request
 from config.db import get_db_session
 from Service.product_service import ProductService
 
-# Crear el Blueprint
 product_bp = Blueprint("products", __name__)
 
 def get_service():

@@ -20,14 +20,12 @@ def get_engine():
     if MYSQL_URI:
         try:
             engine = create_engine(MYSQL_URI, echo=True)
-            # Probar conexión
             conn = engine.connect()
             conn.close()
             logging.info('Conexión a MySQL exitosa.')
             return engine
         except OperationalError:
             logging.warning('No se pudo conectar a MySQL. Usando SQLite local.')
-    # Fallback a SQLite
     engine = create_engine(SQLITE_URI, echo=True)
     return engine
 
