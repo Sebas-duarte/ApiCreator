@@ -4,11 +4,10 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import OperationalError
 from models.product_models import Base
-from dotenv import load_dotenv
+
 logging.basicConfig(level=logging.INFO)
 
 # Cargar variables de entorno desde .env
-load_dotenv()
 
 MYSQL_URI = os.getenv('MYSQL_URI')
 SQLITE_URI = 'sqlite:///product_local.db'
