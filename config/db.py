@@ -7,7 +7,7 @@ from models.product_models import Base
 
 logging.basicConfig(level=logging.INFO)
 
-MYSQL_URI = os.getenv("MYSQL_URI")  # mysql+mysqlconnector://user:pass@localhost:3306/rpm_db
+MYSQL_URI = "mysql+pymysql://usuario:password@localhost:3306/basedatos"
 SQLITE_URI = "sqlite:///product_local.db"
 
 def get_engine():
