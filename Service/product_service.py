@@ -1,5 +1,5 @@
 from models.product_models import Product
-from repository import product_repository
+from Repository import product_repository
 
 def get_products(db):
     return product_repository.get_all_products(db)
