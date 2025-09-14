@@ -1,99 +1,65 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, request, jsonify
 from config.db import get_db_session
-from Service.product_service import ProductService
+from Service import product_service
 
-product_bp = Blueprint("products", __name__)
+product_bp = Blueprint("product_bp", __name__)
 
-def get_service():
-    session = get_db_session()
-    return ProductService(session)
+@product_bp.route("/products", methods=["GET"])
+def get_products():
+    db = next(get_db_session())
+    products = product_service.get_products(db)
+    return jsonify([{
+        "id": p.idProduct,
+        "nombre": p.nombre,
+        "inventario": p.inventario,
+        "categoria_id": p.categoria_id
+    } for p in products])
 
-
-# Listar todos los productos
-@product_bp.route("/", methods=["GET"])
-def listar_productos():
-    service = get_service()
-    productos = service.listar_productos()
-    return jsonify([
-        {
-            "id": p.idProduct,
-            "nombre": p.nombre,
-            "inventario": p.inventario,
-            "categoria": {
-                "id": p.categoria.idCategory,
-                "nombreCategoria": p.categoria.nombreCategoria
-            }
-        }
-        for p in productos
-    ]), 200
-
-
-# Obtener un producto por ID
-@product_bp.route("/<int:product_id>", methods=["GET"])
-def obtener_producto(product_id):
-    service = get_service()
-    producto = service.obtener_producto(product_id)
-    if producto:
-        return jsonify({
-            "id": producto.idProduct,
-            "nombre": producto.nombre,
-            "inventario": producto.inventario,
-            "categoria": {
-                "id": producto.categoria.idCategory,
-                "nombreCategoria": producto.categoria.nombreCategoria
-            }
-        }), 200
-    return jsonify({"error": "Producto no encontrado"}), 404
-
-
-# Crear un nuevo producto
-@product_bp.route("/", methods=["POST"])
-def crear_producto():
-    service = get_service()
-    data = request.get_json()
-
-    nombre = data.get("nombre")
-    inventario = data.get("inventario")
-    categoria_id = data.get("categoria_id")
-
-    if not nombre or inventario is None or not categoria_id:
-        return jsonify({"error": "Faltan datos"}), 400
-
-    producto = service.crear_producto(nombre, inventario, categoria_id)
+@product_bp.route("/products/<int:product_id>", methods=["GET"])
+def get_product(product_id):
+    db = next(get_db_session())
+    product = product_service.get_product(db, product_id)
+    if not product:
+        return jsonify({"error": "Producto no encontrado"}), 404
     return jsonify({
-        "id": producto.idProduct,
-        "nombre": producto.nombre,
-        "inventario": producto.inventario,
-        "categoria_id": producto.categoria_id
+        "id": product.idProduct,
+        "nombre": product.nombre,
+        "inventario": product.inventario,
+        "categoria_id": product.categoria_id
+    })
+
+@product_bp.route("/products", methods=["POST"])
+def create_product():
+    db = next(get_db_session())
+    data = request.json
+    product = product_service.create_product(
+        db, nombre=data["nombre"], inventario=data.get("inventario", 0), categoria_id=data["categoria_id"]
+    )
+    return jsonify({
+        "id": product.idProduct,
+        "nombre": product.nombre,
+        "inventario": product.inventario,
+        "categoria_id": product.categoria_id
     }), 201
 
+@product_bp.route("/products/<int:product_id>", methods=["PUT"])
+def update_product(product_id):
+    db = next(get_db_session())
+    data = request.json
+    product = product_service.update_product(db, product_id, data)
+    if not product:
+        return jsonify({"error": "Producto no encontrado"}), 404
+    return jsonify({
+        "id": product.idProduct,
+        "nombre": product.nombre,
+        "inventario": product.inventario,
+        "categoria_id": product.categoria_id
+    })
 
-# Actualizar un producto
-@product_bp.route("/<int:product_id>", methods=["PUT"])
-def actualizar_producto(product_id):
-    service = get_service()
-    data = request.get_json()
-
-    nombre = data.get("nombre")
-    inventario = data.get("inventario")
-    categoria_id = data.get("categoria_id")
-
-    producto = service.actualizar_producto(product_id, nombre, inventario, categoria_id)
-    if producto:
-        return jsonify({
-            "id": producto.idProduct,
-            "nombre": producto.nombre,
-            "inventario": producto.inventario,
-            "categoria_id": producto.categoria_id
-        }), 200
-    return jsonify({"error": "Producto no encontrado"}), 404
-
-
-# Eliminar un producto
-@product_bp.route("/<int:product_id>", methods=["DELETE"])
-def eliminar_producto(product_id):
-    service = get_service()
-    producto = service.eliminar_producto(product_id)
-    if producto:
-        return jsonify({"message": "Producto eliminado"}), 200
-    return jsonify({"error": "Producto no encontrado"}), 404
+@product_bp.route("/products/<int:product_id>", methods=["DELETE"])
+def delete_product(product_id):
+    db = next(get_db_session())
+    product = product_service.delete_product(db, product_id)
+    if not product:
+        return jsonify({"error": "Producto no encontrado"}), 404
+    return jsonify({"message": "Producto eliminado"})

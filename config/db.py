@@ -7,30 +7,32 @@ from models.product_models import Base
 
 logging.basicConfig(level=logging.INFO)
 
-# Cargar variables de entorno desde .env
-
-MYSQL_URI = os.getenv('MYSQL_URI')
-SQLITE_URI = 'sqlite:///product_local.db'
+MYSQL_URI = os.getenv("MYSQL_URI")  # mysql+mysqlconnector://user:pass@localhost:3306/rpm_db
+SQLITE_URI = "sqlite:///product_local.db"
 
 def get_engine():
-    """
-    Intenta crear una conexión con MySQL. Si falla, usa SQLite local.
-    """
     if MYSQL_URI:
         try:
             engine = create_engine(MYSQL_URI, echo=True)
             conn = engine.connect()
             conn.close()
-            logging.info('Conexión a MySQL exitosa.')
+            logging.info("✅ Conexión a MySQL exitosa.")
             return engine
         except OperationalError:
-            logging.warning('No se pudo conectar a MySQL. Usando SQLite local.')
+            logging.warning("⚠️ No se pudo conectar a MySQL. Usando SQLite local.")
     engine = create_engine(SQLITE_URI, echo=True)
+    logging.info("✅ Conexión a SQLite local establecida.")
     return engine
 
 engine = get_engine()
-Session = sessionmaker(bind=engine)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+# Crear tablas si no existen
 Base.metadata.create_all(engine)
 
 def get_db_session():
-    return Session()
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
