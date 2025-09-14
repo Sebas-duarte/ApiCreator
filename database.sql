@@ -1,7 +1,3 @@
--- Crear base de datos (si no existe)
-CREATE DATABASE IF NOT EXISTS rpm_db;
-USE rpm_db;
-
 -- Crear tabla de categorías
 CREATE TABLE IF NOT EXISTS categories (
     idCategory INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -17,9 +13,15 @@ CREATE TABLE IF NOT EXISTS products (
     FOREIGN KEY(categoria_id) REFERENCES categories(idCategory)
 );
 
--- Insertar datos iniciales
+-- Insertar datos de ejemplo en categorías
 INSERT INTO categories (nombreCategoria) VALUES ('Electrónica');
-INSERT INTO categories (nombreCategoria) VALUES ('Ropa');
+INSERT INTO categories (nombreCategoria) VALUES ('Hogar');
+INSERT INTO categories (nombreCategoria) VALUES ('Deportes');
 
-INSERT INTO products (nombre, inventario, categoria_id) VALUES ('Laptop', 10, 1);
-INSERT INTO products (nombre, inventario, categoria_id) VALUES ('Camiseta', 20, 2);
+-- Insertar datos de ejemplo en productos
+INSERT INTO products (nombre, inventario, categoria_id) VALUES ('Televisor', 10, 1);
+INSERT INTO products (nombre, inventario, categoria_id) VALUES ('Laptop', 5, 1);
+INSERT INTO products (nombre, inventario, categoria_id) VALUES ('Aspiradora', 7, 2);
+INSERT INTO products (nombre, inventario, categoria_id) VALUES ('Cafetera', 3, 2);
+INSERT INTO products (nombre, inventario, categoria_id) VALUES ('Pelota de fútbol', 20, 3);
+INSERT INTO products (nombre, inventario, categoria_id) VALUES ('Raqueta', 15, 3);
