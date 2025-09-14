@@ -36,7 +36,11 @@ def listar_productos():
 def obtener_producto(product_id):
     service = get_service()
     try:
-        producto: Product = service.obtener_producto(product_id) 
+        producto = service.obtener_producto(product_id)
+
+        if producto is None:
+            return jsonify({"error": "Producto no encontrado"}), 404
+
         return jsonify({
             "id": producto.idProduct,
             "nombre": producto.nombre,
@@ -46,11 +50,9 @@ def obtener_producto(product_id):
                 "nombreCategoria": producto.categoria.nombreCategoria
             }
         }), 200
-    except ValueError as ve:
-        return jsonify({"error": str(ve)}), 404
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
 
 # Crear un nuevo producto
 @product_bp.route("/", methods=["POST"])

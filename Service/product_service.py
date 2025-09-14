@@ -1,5 +1,8 @@
 from Repository.product_repository import ProductRepository
 from sqlalchemy.orm import Session
+from typing import Optional
+from models.product_models import Product
+
 
 class ProductService:
     def __init__(self, db: Session):
@@ -43,13 +46,20 @@ class ProductService:
         except Exception as e:
             raise Exception(f"Error al crear producto: {str(e)}")
 
-    def actualizar_producto(self, product_id: int, nombre: str = None, inventario: int = None, categoria_id: int = None):
-        try:
-            return self.repository.update_product(product_id, nombre, inventario, categoria_id)
-        except ValueError as ve:
-            raise ve
-        except Exception as e:
-            raise Exception(f"Error al actualizar producto: {str(e)}")
+    def actualizar_producto(
+        self,
+        product_id: int,
+        nombre: Optional[str] = None,
+        inventario: Optional[int] = None,
+        categoria_id: Optional[int] = None
+    ) -> Optional[Product]:
+        producto = self.repository.update_product(
+            product_id=product_id,
+            nombre=nombre,
+            inventario=inventario,
+            categoria_id=categoria_id
+        )
+        return producto
 
     def eliminar_producto(self, product_id: int):
         try:
