@@ -13,15 +13,17 @@ CREATE TABLE IF NOT EXISTS products (
     FOREIGN KEY(categoria_id) REFERENCES categories(idCategory)
 );
 
--- Insertar datos de ejemplo en categorías
-INSERT INTO categories (nombreCategoria) VALUES ('Electrónica');
-INSERT INTO categories (nombreCategoria) VALUES ('Hogar');
-INSERT INTO categories (nombreCategoria) VALUES ('Deportes');
 
--- Insertar datos de ejemplo en productos
-INSERT INTO products (nombre, inventario, categoria_id) VALUES ('Televisor', 10, 1);
-INSERT INTO products (nombre, inventario, categoria_id) VALUES ('Laptop', 5, 1);
-INSERT INTO products (nombre, inventario, categoria_id) VALUES ('Aspiradora', 7, 2);
-INSERT INTO products (nombre, inventario, categoria_id) VALUES ('Cafetera', 3, 2);
-INSERT INTO products (nombre, inventario, categoria_id) VALUES ('Pelota de fútbol', 20, 3);
-INSERT INTO products (nombre, inventario, categoria_id) VALUES ('Raqueta', 15, 3);
+-- Insertar categorías (solo si no existen)
+INSERT OR IGNORE INTO categories (idCategory, nombreCategoria) VALUES (1, 'Electrónica');
+INSERT OR IGNORE INTO categories (idCategory, nombreCategoria) VALUES (2, 'Hogar');
+INSERT OR IGNORE INTO categories (idCategory, nombreCategoria) VALUES (3, 'Deportes');
+
+-- Insertar productos (solo si no existen)
+INSERT OR IGNORE INTO products (idProduct, nombre, inventario, categoria_id) VALUES (1, 'Televisor', 10, 1);
+INSERT OR IGNORE INTO products (idProduct, nombre, inventario, categoria_id) VALUES (2, 'Laptop', 5, 1);
+INSERT OR IGNORE INTO products (idProduct, nombre, inventario, categoria_id) VALUES (3, 'Aspiradora', 7, 2);
+INSERT OR IGNORE INTO products (idProduct, nombre, inventario, categoria_id) VALUES (4, 'Cafetera', 3, 2);
+INSERT OR IGNORE INTO products (idProduct, nombre, inventario, categoria_id) VALUES (5, 'Pelota de fútbol', 20, 3);
+INSERT OR IGNORE INTO products (idProduct, nombre, inventario, categoria_id) VALUES (6, 'Raqueta', 15, 3);
+
