@@ -13,9 +13,7 @@ El proyecto utiliza una **base de datos SQLite** para almacenar los datos y est�
    Cada producto pertenece a una categoría.
 - Gestión de **categorías**:
    Crear, consultar, actualizar y eliminar categorías.
-- Endpoints organizados con **Blueprints** de Flask.
 - Datos iniciales cargados automáticamente desde `database.sql`.
-- Manejo de errores y validaciones básicas.
 - Estructura modular para facilitar mantenimiento y escalabilidad.
 
 ---
