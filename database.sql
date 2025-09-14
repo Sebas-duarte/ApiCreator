@@ -2,28 +2,24 @@
 CREATE DATABASE IF NOT EXISTS rpm_db;
 USE rpm_db;
 
--- Tabla categorías
+-- Crear tabla de categorías
 CREATE TABLE IF NOT EXISTS categories (
-    idCategory INT AUTO_INCREMENT PRIMARY KEY,
-    nombreCategoria VARCHAR(255) NOT NULL UNIQUE
+    idCategory INTEGER PRIMARY KEY AUTOINCREMENT,
+    nombreCategoria TEXT NOT NULL UNIQUE
 );
 
--- Tabla productos
+-- Crear tabla de productos
 CREATE TABLE IF NOT EXISTS products (
-    idProduct INT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(255) NOT NULL,
-    inventario INT DEFAULT 0,
-    categoria_id INT NOT NULL,
-    FOREIGN KEY (categoria_id) REFERENCES categories(idCategory) ON DELETE CASCADE
+    idProduct INTEGER PRIMARY KEY AUTOINCREMENT,
+    nombre TEXT NOT NULL,
+    inventario INTEGER DEFAULT 0,
+    categoria_id INTEGER NOT NULL,
+    FOREIGN KEY(categoria_id) REFERENCES categories(idCategory)
 );
 
--- Datos iniciales
-INSERT INTO categories (nombreCategoria) VALUES
-('Electrónica'),
-('Ropa'),
-('Hogar');
+-- Insertar datos iniciales
+INSERT INTO categories (nombreCategoria) VALUES ('Electrónica');
+INSERT INTO categories (nombreCategoria) VALUES ('Ropa');
 
-INSERT INTO products (nombre, inventario, categoria_id) VALUES
-('Laptop', 15, 1),
-('Camisa', 30, 2),
-('Silla', 20, 3);
+INSERT INTO products (nombre, inventario, categoria_id) VALUES ('Laptop', 10, 1);
+INSERT INTO products (nombre, inventario, categoria_id) VALUES ('Camiseta', 20, 2);
