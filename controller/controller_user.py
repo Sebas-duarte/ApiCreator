@@ -8,7 +8,7 @@ from flask_jwt_extended import create_access_token, jwt_required, JWTManager
 from flask_jwt_extended.exceptions import NoAuthorizationError
 from flask import current_app
 
-from config.database import get_db_session
+from config.db import get_db_session
 
 service = UsersService(get_db_session())
 

@@ -1,7 +1,7 @@
 from flask import Flask
 from config.jwt import *
-from controllers.band_controller import band_bp
-from controllers.users_controller import user_bp, register_jwt_error_handlers
+from controllers.product_controller import product_bp
+from controllers.controller_user import user_bp, register_jwt_error_handlers
 
 
 app = Flask(__name__)
@@ -15,7 +15,7 @@ app.config['JWT_HEADER_TYPE'] = JWT_HEADER_TYPE
 
 
 # Registrar el blueprint de bandas
-app.register_blueprint(band_bp)
+app.register_blueprint(product_bp)
 app.register_blueprint(user_bp)
 
 # Registrar manejadores personalizados de error JWT
