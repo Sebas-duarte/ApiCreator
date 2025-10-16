@@ -1,18 +1,14 @@
 import logging
+from flask import Blueprint, request, jsonify, current_app
+from flask_jwt_extended import create_access_token, jwt_required
+from flask_jwt_extended.exceptions import NoAuthorizationError
+from config.db import get_db_session
+from Service.users_services import UsersService  # <- corregido
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-from services.users_services import UsersService
-from flask import Blueprint, request, jsonify
-from flask_jwt_extended import create_access_token, jwt_required, JWTManager
-# Handler personalizado para errores de autenticación JWT
-from flask_jwt_extended.exceptions import NoAuthorizationError
-from flask import current_app
-
-from config.db import get_db_session
 
 service = UsersService(get_db_session())
-
-
 user_bp = Blueprint('users', __name__)
 
 
@@ -20,33 +16,21 @@ def register_jwt_error_handlers(app):
     @app.errorhandler(NoAuthorizationError)
     def handle_no_auth_error(e):
         logger.warning("Intento de acceso sin autenticación JWT")
-        return jsonify({'error': 'No autenticado. Debe enviar un token JWT valido en el header Authorization.'}), 401, {'Content-Type': 'application/json; charset=utf-8'}
-
+        return jsonify({'error': 'No autenticado. Debe enviar un token JWT válido en el header Authorization.'}), 401
 
 
 @user_bp.route('/login', methods=['POST'])
 def login():
-    """
-    POST /login
-    Autentica a un usuario y retorna un token JWT si las credenciales son correctas.
-    Parámetros esperados (JSON):
-        username (str): Nombre de usuario.
-        password (str): Contraseña del usuario.
-    Respuesta: JSON con el token JWT o mensaje de error si las credenciales son inválidas.
-    """
     data = request.get_json()
     username = data.get('username')
     password = data.get('password')
     if not username or not password:
-        logger.warning("Login fallido: usuario o contrasena no proporcionados")
-        return jsonify({'error': 'El nombre de usuario y la contrasena son obligatorios'}), 400, {'Content-Type': 'application/json; charset=utf-8'}
+        return jsonify({'error': 'El nombre de usuario y la contraseña son obligatorios'}), 400
     user = service.authenticate_user(username, password)
     if user:
         access_token = create_access_token(identity={'id': user.id, 'username': user.username})
-        logger.info(f"Usuario autenticado: {username}")
-        return jsonify({'access_token': access_token}), 200, {'Content-Type': 'application/json; charset=utf-8'}
-    logger.warning(f"Login fallido para usuario: {username}")
-    return jsonify({'error': 'Credenciales invalidas'}), 401, {'Content-Type': 'application/json; charset=utf-8'}
+        return jsonify({'access_token': access_token}), 200
+    return jsonify({'error': 'Credenciales inválidas'}), 401
 
 @user_bp.route('/users', methods=['GET'])
 @jwt_required()

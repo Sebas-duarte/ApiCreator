@@ -3,26 +3,19 @@ from config.db import get_db_session
 from Service.product_service import ProductService, CategoryService
 from models.product_models import Product, Category
 
-# Blueprint con prefijo /productos
 product_bp = Blueprint("product_bp", __name__, url_prefix="/productos")
 
-# Función para instanciar servicios
 def get_services():
     session = get_db_session()
     return ProductService(session), CategoryService(session)
 
-# ========================
-# Categorías
-# ========================
-
-# Listar todas las categorías
+# === Categorías ===
 @product_bp.route("/categorias", methods=["GET"])
 def listar_categorias():
     _, category_service = get_services()
     categorias = category_service.listar_categorias()
     return jsonify([{"id": c.idCategory, "nombreCategoria": c.nombreCategoria} for c in categorias]), 200
 
-# Crear una categoría
 @product_bp.route("/categorias", methods=["POST"])
 def crear_categoria():
     _, category_service = get_services()
@@ -33,11 +26,7 @@ def crear_categoria():
     categoria = category_service.crear_categoria(nombre)
     return jsonify({"id": categoria.idCategory, "nombreCategoria": categoria.nombreCategoria}), 201
 
-# ========================
-# Productos
-# ========================
-
-# Listar todos los productos
+# === Productos ===
 @product_bp.route("/", methods=["GET"])
 def listar_productos():
     product_service, _ = get_services()
@@ -54,7 +43,6 @@ def listar_productos():
         } for p in productos
     ]), 200
 
-# Obtener un producto por ID
 @product_bp.route("/<int:product_id>", methods=["GET"])
 def obtener_producto(product_id):
     product_service, _ = get_services()
@@ -71,7 +59,6 @@ def obtener_producto(product_id):
         }
     }), 200
 
-# Crear un producto
 @product_bp.route("/", methods=["POST"])
 def crear_producto():
     product_service, _ = get_services()
@@ -89,7 +76,6 @@ def crear_producto():
         "categoria_id": producto.categoria_id
     }), 201
 
-# Actualizar un producto
 @product_bp.route("/<int:product_id>", methods=["PUT"])
 def actualizar_producto(product_id):
     product_service, _ = get_services()
@@ -109,7 +95,6 @@ def actualizar_producto(product_id):
         "categoria_id": producto.categoria_id
     }), 200
 
-# Eliminar un producto
 @product_bp.route("/<int:product_id>", methods=["DELETE"])
 def eliminar_producto(product_id):
     product_service, _ = get_services()

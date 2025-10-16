@@ -5,7 +5,6 @@ class ProductService:
     def __init__(self, session):
         self.session = session
 
-    # Métodos de CRUD para productos
     def listar_productos(self):
         return self.session.query(Product).all()
 
@@ -39,11 +38,11 @@ class ProductService:
         self.session.commit()
         return True
 
+
 class CategoryService:
     def __init__(self, session):
         self.session = session
 
-    # Métodos de CRUD para categorías
     def listar_categorias(self):
         return self.session.query(Category).all()
 
