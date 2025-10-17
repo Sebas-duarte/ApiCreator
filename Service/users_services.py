@@ -1,54 +1,50 @@
 from models.models_user import User
 from sqlalchemy.orm import Session
-from werkzeug.security import generate_password_hash, check_password_hash
-import logging
-
-logger = logging.getLogger(__name__)
 
 class UsersService:
     def __init__(self, db: Session):
         self.db = db
+        self.model = User  # ✅ define el modelo que usará el servicio
 
-    def get_all_users(self):
-        """Obtiene todos los usuarios."""
-        return self.db.query(User).all()
-
-    def get_user_by_username(self, username: str):
-        """Obtiene un usuario por su nombre de usuario."""
-        return self.db.query(User).filter(User.username == username).first()
-
-    def create_user(self, username: str, password: str):
-        """Crea un nuevo usuario con contraseña cifrada."""
-        hashed_password = generate_password_hash(password)
-        user = User(username=username, password=hashed_password)
-        self.db.add(user)
+    # 🧩 Crear usuario
+    def create_user(self, username, password):
+        new_user = self.model(username=username, password=password)
+        self.db.add(new_user)
         self.db.commit()
-        self.db.refresh(user)
-        logger.info(f"Usuario creado: {username}")
+        self.db.refresh(new_user)
+        return new_user
+
+    # 🧩 Autenticar usuario
+    def authenticate_user(self, username, password):
+        user = self.db.query(self.model).filter_by(username=username, password=password).first()
         return user
 
-    def authenticate_user(self, username: str, password: str):
-        """Autentica un usuario verificando la contraseña."""
-        user = self.get_user_by_username(username)
-        if user and check_password_hash(user.password, password):
-            logger.info(f"Usuario autenticado: {username}")
-            return user
-        logger.warning(f"Intento fallido de autenticación: {username}")
-        return None
+    # 🧩 Obtener todos los usuarios
+    def get_all_users(self):
+        return self.db.query(self.model).all()
 
-    def delete_user(self, user_id: int):
-        """Elimina un usuario por ID."""
-        user = self.db.query(User).filter(User.id == user_id).first()
+    # 🧩 Obtener un usuario por ID
+    def get_user_by_id(self, user_id):
+        return self.db.query(self.model).filter_by(id=user_id).first()
+
+    # 🧩 Actualizar usuario
+    def update_user(self, user_id, username=None, password=None):
+        user = self.get_user_by_id(user_id)
+        if not user:
+            return None
+        if username:
+            user.username = username
+        if password:
+            user.password = password
+        self.db.commit()
+        self.db.refresh(user)
+        return user
+
+    # 🧩 Eliminar usuario
+    def delete_user(self, user_id):
+        user = self.get_user_by_id(user_id)
         if not user:
             return None
         self.db.delete(user)
         self.db.commit()
-        logger.info(f"Usuario eliminado: {user.username}")
-        return user
-        
-    def get_user_by_id(self, user_id):
-        """
-        Obtiene un usuario por su ID.
-        """
-        user = self.db.query(self.model).filter_by(id=user_id).first()
-        return user
+        return True
