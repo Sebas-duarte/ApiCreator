@@ -5,7 +5,7 @@ from controller.controller_user import user_bp, register_jwt_error_handlers
 from flask_jwt_extended import JWTManager
 from config.db import Base, engine
 from models.models_user import User
-
+import os
 
 Base.metadata.create_all(bind=engine)
 app = Flask(__name__)
@@ -18,16 +18,6 @@ app.config['JWT_HEADER_NAME'] = JWT_HEADER_NAME
 app.config['JWT_HEADER_TYPE'] = JWT_HEADER_TYPE
 
 jwt = JWTManager(app)
-
-# Crear la aplicación Flask
-app = Flask(__name__)
-
-# Configuración de JWT
-app.config["JWT_SECRET_KEY"] = JWT_SECRET_KEY
-app.config["JWT_TOKEN_LOCATION"] = JWT_TOKEN_LOCATION
-app.config["JWT_ACCESS_TOKEN_EXPIRES"] = JWT_ACCESS_TOKEN_EXPIRES
-app.config["JWT_HEADER_NAME"] = JWT_HEADER_NAME
-app.config["JWT_HEADER_TYPE"] = JWT_HEADER_TYPE
 
 # Registrar Blueprints (rutas)
 app.register_blueprint(product_bp)
