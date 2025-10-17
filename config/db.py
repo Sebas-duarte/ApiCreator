@@ -2,7 +2,6 @@ import os
 import logging
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.exc import OperationalError
 from models.product_models import Base
 
 logging.basicConfig(level=logging.INFO)
@@ -45,6 +44,7 @@ def get_engine():
 
 engine = get_engine()
 Session = sessionmaker(bind=engine)
+
 Base.metadata.create_all(engine)
 
 

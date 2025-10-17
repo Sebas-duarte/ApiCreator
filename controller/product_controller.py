@@ -40,6 +40,18 @@ def create_category():
         'nombreCategoria': categoria.nombreCategoria
     }), 201
 
+    try:
+        producto = service.crear_producto(nombre, inventario, categoria_id)
+        return jsonify({
+            "id": producto.idProduct,
+            "nombre": producto.nombre,
+            "inventario": producto.inventario,
+            "categoria_id": producto.categoria_id
+        }), 201
+    except ValueError as ve:
+        return jsonify({"error": str(ve)}), 400
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 @product_bp.route('/products', methods=['GET'])
