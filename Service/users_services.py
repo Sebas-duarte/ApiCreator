@@ -8,11 +8,11 @@ class UsersService:
 
     # 🧩 Crear usuario
     def create_user(self, username, password):
-        existing_user = self.db.query(Users).filter_by(username=username).first()
+        existing_user = self.db.query(User).filter_by(username=username).first()
         if existing_user:
             raise ValueError("El nombre de usuario ya existe")
 
-        new_user = Users(username=username, password=password)
+        new_user = User(username=username, password=password)
         self.db.add(new_user)
         self.db.commit()
         return new_user
