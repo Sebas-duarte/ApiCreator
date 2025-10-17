@@ -1,5 +1,6 @@
 from models.models_user import User
 from sqlalchemy.orm import Session
+from werkzeug.security import generate_password_hash, check_password_hash
 import logging
 
 logger = logging.getLogger(__name__)
@@ -17,13 +18,23 @@ class UsersService:
         return self.db.query(User).filter(User.username == username).first()
 
     def create_user(self, username: str, password: str):
-        """Crea un nuevo usuario."""
-        user = User(username=username, password=password)
+        """Crea un nuevo usuario con contraseña cifrada."""
+        hashed_password = generate_password_hash(password)
+        user = User(username=username, password=hashed_password)
         self.db.add(user)
         self.db.commit()
         self.db.refresh(user)
         logger.info(f"Usuario creado: {username}")
         return user
+
+    def authenticate_user(self, username: str, password: str):
+        """Autentica un usuario verificando la contraseña."""
+        user = self.get_user_by_username(username)
+        if user and check_password_hash(user.password, password):
+            logger.info(f"Usuario autenticado: {username}")
+            return user
+        logger.warning(f"Intento fallido de autenticación: {username}")
+        return None
 
     def delete_user(self, user_id: int):
         """Elimina un usuario por ID."""

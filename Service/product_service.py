@@ -1,53 +1,45 @@
-from models.product_models import Product, Category
-from Repository import product_repository
+from Repository.product_repository import ProductRepository, CategoryRepository
+from sqlalchemy.orm import Session
+from models.product_models import Product
+
 
 class ProductService:
-    def __init__(self, session):
-        self.session = session
+
+    def __init__(self, db_session: Session):
+
+        self.repository = ProductRepository(db_session)
 
     def listar_productos(self):
-        return self.session.query(Product).all()
 
-    def obtener_producto(self, product_id):
-        return self.session.query(Product).filter_by(idProduct=product_id).first()
+        return self.repository.get_all_products()
 
-    def crear_producto(self, nombre, inventario, categoria_id):
-        producto = Product(nombre=nombre, inventario=inventario, categoria_id=categoria_id)
-        self.session.add(producto)
-        self.session.commit()
-        return producto
+    def obtener_producto(self, product_id: int):
 
-    def actualizar_producto(self, product_id, nombre=None, inventario=None, categoria_id=None):
-        producto = self.obtener_producto(product_id)
-        if not producto:
-            return None
-        if nombre:
-            producto.nombre = nombre
-        if inventario is not None:
-            producto.inventario = inventario
-        if categoria_id:
-            producto.categoria_id = categoria_id
-        self.session.commit()
-        return producto
+        return self.repository.get_product_by_id(product_id)
 
-    def eliminar_producto(self, product_id):
-        producto = self.obtener_producto(product_id)
-        if not producto:
-            return False
-        self.session.delete(producto)
-        self.session.commit()
-        return True
+    def crear_producto(self, nombre: str, inventario: int, categoria_id: int):
+
+        return self.repository.create_product(nombre, inventario, categoria_id)
+
+    def actualizar_producto(self, product_id: int, nombre: str = None, inventario: int = None, categoria_id: int = None):
+
+        return self.repository.update_product(product_id, nombre, inventario, categoria_id)
+
+    def eliminar_producto(self, product_id: int):
+
+        return self.repository.delete_product(product_id)
 
 
 class CategoryService:
-    def __init__(self, session):
-        self.session = session
+
+    def __init__(self, db_session: Session):
+
+        self.repository = CategoryRepository(db_session)
 
     def listar_categorias(self):
-        return self.session.query(Category).all()
 
-    def crear_categoria(self, nombreCategoria):
-        categoria = Category(nombreCategoria=nombreCategoria)
-        self.session.add(categoria)
-        self.session.commit()
-        return categoria
+        return self.repository.get_all_categories()
+
+    def crear_categoria(self, nombre_categoria: str):
+
+        return self.repository.create_category(nombre_categoria)
