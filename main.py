@@ -9,7 +9,7 @@ import os
 
 Base.metadata.create_all(bind=engine)
 app = Flask(__name__)
-
+    
 # Configurar JWT
 app.config['JWT_SECRET_KEY'] = JWT_SECRET_KEY
 app.config['JWT_TOKEN_LOCATION'] = JWT_TOKEN_LOCATION
