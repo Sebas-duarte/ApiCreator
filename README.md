@@ -1,10 +1,11 @@
 # RPM API - Gestión de Productos y Categorías
 
 ## Descripción
-Esta api permite gestionar productos y categorías. Permite realizar operaciones CRUD (Crear, Leer, Actualizar y Eliminar) sobre productos y categorías, y obtener la información en formato JSON.  
 
 El proyecto utiliza una **base de datos SQLite** para almacenar los datos y está diseñado para ser fácilmente escalable y adaptable a otros motores de base de datos si se requie.
 
+Esta API permite registrar, autenticar y gestionar usuarios de manera segura utilizando Flask, SQLAlchemy y JSON Web Tokens (JWT).
+Incluye endpoints protegidos por token y ejemplos listos para usar con cURL.
 ---
 
 ## Características principales
