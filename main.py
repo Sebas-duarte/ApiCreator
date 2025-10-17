@@ -3,7 +3,11 @@ from config.jwt import *
 from controller.product_controller import product_bp
 from controller.controller_user import user_bp, register_jwt_error_handlers
 from flask_jwt_extended import JWTManager
+from config.db import Base, engine
+from models.models_user import User
 
+
+Base.metadata.create_all(bind=engine)
 app = Flask(__name__)
 
 # Configurar JWT

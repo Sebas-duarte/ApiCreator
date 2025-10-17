@@ -1,6 +1,6 @@
 import logging
 from sqlalchemy import Column, Integer, String
-from models.db import Base
+from config.db import Base
 
 # Configuración del logger para este modelo
 logging.basicConfig(level=logging.INFO)

@@ -5,6 +5,7 @@ from flask_jwt_extended.exceptions import NoAuthorizationError
 from config.db import get_db_session
 from Service.users_services import UsersService 
 
+
 # Configurar logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
