@@ -45,3 +45,10 @@ class UsersService:
         self.db.commit()
         logger.info(f"Usuario eliminado: {user.username}")
         return user
+        
+    def get_user_by_id(self, user_id):
+        """
+        Obtiene un usuario por su ID.
+        """
+        user = self.db.query(self.model).filter_by(id=user_id).first()
+        return user

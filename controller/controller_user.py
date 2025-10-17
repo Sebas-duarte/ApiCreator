@@ -41,7 +41,7 @@ def login():
         logger.warning(f"Login fallido para usuario: {username}")
         return jsonify({'error': 'Credenciales inválidas'}), 401
 
-    access_token = create_access_token(identity={'id': user.id, 'username': user.username})
+    access_token = create_access_token(identity=str(user.id), additional_claims={"username": user.username})
     logger.info(f"Usuario autenticado: {username}")
     return jsonify({'access_token': access_token}), 200
 
