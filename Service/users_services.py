@@ -4,9 +4,9 @@ from sqlalchemy.orm import Session
 class UsersService:
     def __init__(self, db: Session):
         self.db = db
-        self.model = User  # ✅ define el modelo que usará el servicio
+        self.model = User 
 
-    # 🧩 Crear usuario
+
     def create_user(self, username, password):
         existing_user = self.db.query(User).filter_by(username=username).first()
         if existing_user:
@@ -18,20 +18,19 @@ class UsersService:
         return new_user
 
 
-    # 🧩 Autenticar usuario
+
     def authenticate_user(self, username, password):
         user = self.db.query(self.model).filter_by(username=username, password=password).first()
         return user
 
-    # 🧩 Obtener todos los usuarios
     def get_all_users(self):
         return self.db.query(self.model).all()
 
-    # 🧩 Obtener un usuario por ID
+
     def get_user_by_id(self, user_id):
         return self.db.query(self.model).filter_by(id=user_id).first()
 
-    # 🧩 Actualizar usuario
+
     def update_user(self, user_id, username=None, password=None):
         user = self.get_user_by_id(user_id)
         if not user:
@@ -44,7 +43,7 @@ class UsersService:
         self.db.refresh(user)
         return user
 
-    # 🧩 Eliminar usuario
+
     def delete_user(self, user_id):
         user = self.get_user_by_id(user_id)
         if not user:

@@ -2,7 +2,6 @@ import logging
 from sqlalchemy.orm import Session
 from models.models_user import User
 
-# Configurar logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 

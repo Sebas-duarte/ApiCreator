@@ -27,7 +27,7 @@ def get_engine():
 
     engine = create_engine(SQLITE_URI, echo=True)
 
-    # Ejecutar el SQL del archivo database.sql
+    """ Ejecutar el SQL del archivo database.sql """
     if os.path.exists(SCHEMA_SQL_PATH):
         with open(SCHEMA_SQL_PATH, 'r', encoding='utf-8') as f:
             sql_commands = f.read()

@@ -3,10 +3,9 @@ from flask_jwt_extended import jwt_required
 from config.db import get_db_session
 from Service.product_service import ProductService, CategoryService
 
-# Crear Blueprint
+
 product_bp = Blueprint('product_bp', __name__)
 
-# Instancia global de servicios
 db_session = get_db_session()
 product_service = ProductService(db_session)
 category_service = CategoryService(db_session)
