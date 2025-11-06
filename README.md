@@ -1,55 +1,56 @@
 # RPM API - Gestión de Productos y Categorías
 
 ## Descripción
+ Descripción
+Este proyecto implementa una API RESTful para la gestión de productos y categorías, con autenticación segura de usuarios. Utiliza una base de datos SQLite, pero está diseñada para ser fácilmente escalable y adaptable a otros motores de base de datos como PostgreSQL o MySQL.
+La API está desarrollada con Flask, SQLAlchemy y JSON Web Tokens (JWT) para garantizar una arquitectura modular, segura y mantenible. Además, se incluye una interfaz frontend básica en HTML y CSS para facilitar el registro e inicio de sesión de usuarios.
 
-El proyecto utiliza una **base de datos SQLite** para almacenar los datos y está diseñado para ser fácilmente escalable y adaptable a otros motores de base de datos si se requie.
-
-Esta API permite registrar, autenticar y gestionar usuarios de manera segura utilizando Flask, SQLAlchemy y JSON Web Tokens (JWT).
-Incluye endpoints protegidos por token y ejemplos listos para usar con cURL.
 ---
 
 ## Características principales
-- Gestión de **productos**:
-   Crear, consultar, actualizar y eliminar productos.
-   Cada producto pertenece a una categoría.
-- Gestión de **categorías**:
-   Crear, consultar, actualizar y eliminar categorías.
-- Datos iniciales cargados automáticamente desde `database.sql`.
-- Estructura modular para facilitar mantenimiento y escalabilidad.
+- Gestión de productos: Crear, consultar, actualizar y eliminar productos. Cada producto está asociado a una categoría.
+- Gestión de categorías: Crear, consultar, actualizar y eliminar categorías.
+- Gestión de usuarios: Registro, autenticación y administración de usuarios con protección JWT.
+- Autenticación segura: Uso de tokens JWT con expiración para proteger rutas sensibles.
+- Datos iniciales: Carga automática desde database.sql.
+- Frontend básico: Interfaz web para registro e inicio de sesión de usuarios.
+- Estructura modular: Código organizado para facilitar mantenimiento y escalabilidad.
 
 
-Funcionalidades implementadas
+## Autenticación y Seguridad
+La autenticación se implementa mediante JSON Web Tokens (JWT). Los tokens se generan al iniciar sesión y deben incluirse en el encabezado Authorization de las solicitudes protegidas.
 
-Registro de usuarios (/registry)
-Se desarrolló un endpoint POST que permite registrar nuevos usuarios enviando su nombre de usuario y contraseña en formato JSON. El sistema valida que el usuario no exista previamente en la base de datos y, de ser válido, lo almacena de manera segura.
 
-Autenticación de usuarios (/login)
-A través de un endpoint POST, los usuarios pueden autenticarse enviando sus credenciales. Si son correctas, el sistema genera un token JWT con tiempo de expiración, el cual debe incluirse en el encabezado Authorization de las siguientes solicitudes para acceder a los recursos protegidos.
+Flujo de autenticación:
+- Registro de usuarios (POST /registry):
+- Recibe username y password en formato JSON.
+- Verifica que el usuario no exista.
+- Almacena la contraseña de forma segura usando hashing con Werkzeug.
+- Inicio de sesión (POST /login):
+- Recibe credenciales en JSON.
+- Si son válidas, genera un token JWT con expiración.
+- El token debe enviarse en el encabezado Authorization: Bearer <token> para acceder a rutas protegidas.
+- Protección de rutas:
+- Endpoints como /users, /products, /categories están protegidos.
+- Se valida el token antes de ejecutar cualquier acción.
 
-Gestión de usuarios protegida
-Se implementaron varios endpoints con protección JWT:
-
-GET /users: obtiene la lista completa de usuarios registrados.
-
-GET /users/<id>: consulta los datos de un usuario específico.
-
-PUT /users/<id>: permite actualizar información de un usuario existente.
-
-DELETE /users/<id>: elimina un usuario del sistema.
-
-Estas rutas verifican la validez del token JWT antes de ejecutar cualquier acción, garantizando la seguridad y autenticidad del usuario solicitante.
----
-
-Para la verificación del funcionamiento de la API, se utilizaron comandos cURL desde la terminal, simulando las diferentes solicitudes HTTP.
-Durante las pruebas, se validó el correcto flujo de registro, autenticación, emisión y verificación de tokens, así como la ejecución de las operaciones CRUD protegidas.
-
----
 
 ## Tecnologías utilizadas
-- **Python **
-- **Flask** 
-- **SQLite** 
-- **SQLAlchemy** 
-- **Werkzeug** 
+- Backend:
+- Python
+- Flask
+- SQLite
+- SQLAlchemy
+- Werkzeug
+- PyJWT
+- Frontend:
+- HTML5
+- CSS3
+- JavaScript (básico para llamadas fetch a la API)
+
 
 ---
+## Pruebas
+Se realizaron pruebas con:
+- cURL: Para simular solicitudes HTTP y validar el flujo completo de autenticación y operaciones CRUD.
+- Frontend: Para verificar la integración entre la interfaz web y la API
