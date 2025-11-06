@@ -25,7 +25,6 @@ Flujo de autenticación:
 - Registro de usuarios (POST /registry):
 - Recibe username y password en formato JSON.
 - Verifica que el usuario no exista.
-- Almacena la contraseña de forma segura usando hashing con Werkzeug.
 - Inicio de sesión (POST /login):
 - Recibe credenciales en JSON.
 - Si son válidas, genera un token JWT con expiración.
