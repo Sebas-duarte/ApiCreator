@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Productos - RPM API</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <div class="navbar-content">
+            <h1>📦 Gestión de Productos</h1>
+            <div class="navbar-actions">
+                <span id="username"></span>
+                <button onclick="logout()">Cerrar Sesión</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="content-wrapper">
+            <!-- Add/Edit Product Section -->
+            <div class="card-crud">
+                <h2>Agregar Producto</h2>
+                <form id="productForm">
+                    <div class="form-group">
+                        <label for="productName">Nombre del Producto</label>
+                        <input type="text" id="productName" placeholder="Ej: Laptop" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="productInventory">Inventario</label>
+                        <input type="number" id="productInventory" placeholder="Cantidad" min="0" value="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="productCategory">Categoría</label>
+                        <select id="productCategory" required>
+                            <option value="">Selecciona una categoría</option>
+                        </select>
+                    </div>
+                    <button type="submit" id="submitBtn">Agregar Producto</button>
+                    <button type="button" id="cancelBtn" style="display: none; background: #6c757d; margin-top: 10px;">Cancelar Edición</button>
+                </form>
+            </div>
+
+            <!-- Categories Section -->
+            <div class="card-crud">
+                <h2>Categorías</h2>
+                <div class="form-group">
+                    <label for="newCategory">Agregar Nueva Categoría</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="newCategory" placeholder="Nombre de la categoría" style="flex: 1;">
+                        <button type="button" onclick="addCategory()" style="width: 100px;">Agregar</button>
+                    </div>
+                </div>
+                <div id="categoriesList" style="margin-top: 20px;">
+                    <div class="loading">Cargando categorías...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Products Section -->
+        <div class="products-section">
+            <div class="card-crud">
+                <h2>Lista de Productos</h2>
+                <div id="productsList" class="products-grid">
+                    <div class="loading">Cargando productos...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeEditModal()">&times;</span>
+            <h2>Editar Producto</h2>
+            <form id="editForm">
+                <div class="form-group">
+                    <label for="editProductName">Nombre del Producto</label>
+                    <input type="text" id="editProductName" required>
+                </div>
+                <div class="form-group">
+                    <label for="editProductInventory">Inventario</label>
+                    <input type="number" id="editProductInventory" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="editProductCategory">Categoría</label>
+                    <select id="editProductCategory" required>
+                        <option value="">Selecciona una categoría</option>
+                    </select>
+                </div>
+                <button type="submit">Guardar Cambios</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+    <script>
+        let products = [];
+        let categories = [];
+        let editingProductId = null;
+
+        // Initialize
+        window.addEventListener('load', () => {
+            if (!isLoggedIn()) {
+                window.location.href = '/';
+                return;
+            }
+            loadCategories();
+            loadProducts();
+        });
+
+        // Load Categories
+        async function loadCategories() {
+            try {
+                const data = await makeRequest('/categories');
+                categories = data;
+                updateCategorySelects();
+                displayCategories();
+            } catch (error) {
+                console.error('Error loading categories:', error);
+            }
+        }
+
+        // Load Products
+        async function loadProducts() {
+            try {
+                const data = await makeRequest('/products');
+                products = data;
+                displayProducts();
+            } catch (error) {
+                console.error('Error loading products:', error);
+                document.getElementById('productsList').innerHTML = '<div class="empty-state">Error al cargar productos</div>';
+            }
+        }
+
+        // Update Category Selects
+        function updateCategorySelects() {
+            const selects = ['productCategory', 'editProductCategory'];
+            selects.forEach(selectId => {
+                const select = document.getElementById(selectId);
+                const currentValue = select.value;
+                select.innerHTML = '<option value="">Selecciona una categoría</option>';
+                categories.forEach(cat => {
+                    const option = document.createElement('option');
+                    option.value = cat.id;
+                    option.textContent = cat.nombreCategoria;
+                    select.appendChild(option);
+                });
+                select.value = currentValue;
+            });
+        }
+
+        // Display Categories
+        function displayCategories() {
+            const list = document.getElementById('categoriesList');
+            if (categories.length === 0) {
+                list.innerHTML = '<div class="empty-state">No hay categorías</div>';
+                return;
+            }
+            list.innerHTML = categories.map(cat => `
+                <div class="product-category" style="display: inline-block; margin: 5px 5px 5px 0; cursor: default;">
+                    ${cat.nombreCategoria}
+                </div>
+            `).join('');
+        }
+
+        // Display Products
+        function displayProducts() {
+            const list = document.getElementById('productsList');
+            if (products.length === 0) {
+                list.innerHTML = '<div class="empty-state">No hay productos</div>';
+                return;
+            }
+            list.innerHTML = products.map(product => `
+                <div class="product-card">
+                    <h3>${product.nombre}</h3>
+                    <div class="product-category">${product.categoria?.nombreCategoria || 'Sin categoría'}</div>
+                    <div class="product-info"><strong>Inventario:</strong> ${product.inventario} unidades</div>
+                    <div class="product-info"><strong>ID:</strong> ${product.id}</div>
+                    <div class="product-actions">
+                        <button class="btn-sm btn-edit" onclick="openEditModal(${product.id})">✏️ Editar</button>
+                        <button class="btn-sm btn-delete" onclick="deleteProduct(${product.id})">🗑️ Eliminar</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Add Category
+        async function addCategory() {
+            const input = document.getElementById('newCategory');
+            const name = input.value.trim();
+
+            if (!name) {
+                showAlert('Ingresa el nombre de la categoría', 'error');
+                return;
+            }
+
+            try {
+                await makeRequest('/categories', 'POST', { nombreCategoria: name });
+                input.value = '';
+                showAlert('Categoría creada exitosamente', 'success');
+                loadCategories();
+            } catch (error) {
+                showAlert(error.message || 'Error al crear la categoría', 'error');
+            }
+        }
+
+        // Add Product
+        document.getElementById('productForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('productName').value;
+            const inventory = parseInt(document.getElementById('productInventory').value);
+            const categoryId = parseInt(document.getElementById('productCategory').value);
+
+            if (!name || !categoryId) {
+                showAlert('Completa todos los campos', 'error');
+                return;
+            }
+
+            try {
+                if (editingProductId) {
+                    await makeRequest(`/products/${editingProductId}`, 'PUT', {
+                        nombre: name,
+                        inventario: inventory,
+                        categoria_id: categoryId
+                    });
+                    showAlert('Producto actualizado exitosamente', 'success');
+                    editingProductId = null;
+                    document.getElementById('cancelBtn').style.display = 'none';
+                    document.getElementById('submitBtn').textContent = 'Agregar Producto';
+                } else {
+                    await makeRequest('/products', 'POST', {
+                        nombre: name,
+                        inventario: inventory,
+                        categoria_id: categoryId
+                    });
+                    showAlert('Producto creado exitosamente', 'success');
+                }
+                document.getElementById('productForm').reset();
+                loadProducts();
+            } catch (error) {
+                showAlert(error.message || 'Error al guardar el producto', 'error');
+            }
+        });
+
+        // Edit Product
+        function openEditModal(productId) {
+            editingProductId = productId;
+            const product = products.find(p => p.id === productId);
+            
+            if (product) {
+                document.getElementById('editProductName').value = product.nombre;
+                document.getElementById('editProductInventory').value = product.inventario;
+                document.getElementById('editProductCategory').value = product.categoria?.id || '';
+                document.getElementById('editModal').classList.add('show');
+            }
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').classList.remove('show');
+            editingProductId = null;
+        }
+
+        document.getElementById('editForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('editProductName').value;
+            const inventory = parseInt(document.getElementById('editProductInventory').value);
+            const categoryId = parseInt(document.getElementById('editProductCategory').value);
+
+            try {
+                await makeRequest(`/products/${editingProductId}`, 'PUT', {
+                    nombre: name,
+                    inventario: inventory,
+                    categoria_id: categoryId
+                });
+                showAlert('Producto actualizado exitosamente', 'success');
+                closeEditModal();
+                loadProducts();
+            } catch (error) {
+                showAlert(error.message || 'Error al actualizar el producto', 'error');
+            }
+        });
+
+        // Delete Product
+        async function deleteProduct(productId) {
+            if (!confirm('¿Estás seguro de que deseas eliminar este producto?')) {
+                return;
+            }
+
+            try {
+                await makeRequest(`/products/${productId}`, 'DELETE');
+                showAlert('Producto eliminado exitosamente', 'success');
+                loadProducts();
+            } catch (error) {
+                showAlert(error.message || 'Error al eliminar el producto', 'error');
+            }
+        }
+
+        // Close modal when clicking outside
+        window.onclick = (event) => {
+            const modal = document.getElementById('editModal');
+            if (event.target === modal) {
+                closeEditModal();
+            }
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autenticación - RPM API</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1 id="title">Iniciar Sesión</h1>
+            
+            <div id="alerts"></div>
+
+            <!-- Login Form -->
+            <form id="loginForm" style="display: block;">
+                <div class="form-group">
+                    <label for="loginUsername">Nombre de usuario</label>
+                    <input type="text" id="loginUsername" placeholder="Ingresa tu usuario" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Contraseña</label>
+                    <input type="password" id="loginPassword" placeholder="Ingresa tu contraseña" required>
+                </div>
+                <button type="submit">Iniciar Sesión</button>
+                <div class="form-footer">
+                    ¿No tienes cuenta? <a onclick="toggleForms()">Crear cuenta</a>
+                </div>
+            </form>
+
+            <!-- Register Form -->
+            <form id="registerForm" style="display: none;">
+                <div class="form-group">
+                    <label for="registerUsername">Nombre de usuario</label>
+                    <input type="text" id="registerUsername" placeholder="Elige un nombre de usuario" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Contraseña</label>
+                    <input type="password" id="registerPassword" placeholder="Crea una contraseña" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPasswordConfirm">Confirmar contraseña</label>
+                    <input type="password" id="registerPasswordConfirm" placeholder="Confirma tu contraseña" required>
+                </div>
+                <button type="submit">Crear Cuenta</button>
+                <div class="form-footer">
+                    ¿Ya tienes cuenta? <a onclick="toggleForms()">Inicia sesión</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+    <script>
+        function toggleForms() {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const title = document.getElementById('title');
+            
+            loginForm.style.display = loginForm.style.display === 'none' ? 'block' : 'none';
+            registerForm.style.display = registerForm.style.display === 'none' ? 'block' : 'none';
+            title.textContent = loginForm.style.display === 'block' ? 'Iniciar Sesión' : 'Crear Cuenta';
+            clearAlerts();
+        }
+
+        // Login Handler
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            clearAlerts();
+
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const response = await makeRequest('/login', 'POST', { username, password });
+                localStorage.setItem('authToken', response.access_token);
+                showAlert('Sesión iniciada correctamente', 'success');
+                setTimeout(() => {
+                    window.location.href = '/crud';
+                }, 1500);
+            } catch (error) {
+                showAlert(error.message || 'Error al iniciar sesión', 'error');
+            }
+        });
+
+        // Register Handler
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            clearAlerts();
+
+            const username = document.getElementById('registerUsername').value;
+            const password = document.getElementById('registerPassword').value;
+            const passwordConfirm = document.getElementById('registerPasswordConfirm').value;
+
+            if (password !== passwordConfirm) {
+                showAlert('Las contraseñas no coinciden', 'error');
+                return;
+            }
+
+            if (password.length < 6) {
+                showAlert('La contraseña debe tener al menos 6 caracteres', 'error');
+                return;
+            }
+
+            try {
+                await makeRequest('/registry', 'POST', { username, password });
+                showAlert('Cuenta creada exitosamente. Inicia sesión', 'success');
+                document.getElementById('registerForm').reset();
+                setTimeout(() => {
+                    toggleForms();
+                }, 1500);
+            } catch (error) {
+                showAlert(error.message || 'Error al crear la cuenta', 'error');
+            }
+        });
+
+        // Check if already logged in
+        window.addEventListener('load', () => {
+            if (isLoggedIn()) {
+                window.location.href = '/crud';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, send_from_directory
 from config.jwt import *
 from controller.product_controller import product_bp
 from controller.controller_user import user_bp, register_jwt_error_handlers
@@ -29,6 +29,18 @@ app.register_blueprint(user_bp)
 """ Registrar manejadores personalizados de errores JWT"""
 register_jwt_error_handlers(app)
 
+# Servir archivos frontend
+@app.route('/')
+def index():
+    return send_from_directory('frontend', 'index.html')
+
+@app.route('/crud')
+def crud():
+    return send_from_directory('frontend', 'crud.html')
+
+@app.route('/static/<path:path>')
+def serve_static(path):
+    return send_from_directory('frontend/static', path)
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', debug=True, port=5000)
