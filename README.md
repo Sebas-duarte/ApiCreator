@@ -3,7 +3,7 @@
 ## Descripción
  Descripción
 Este proyecto implementa una API RESTful para la gestión de productos y categorías, con autenticación segura de usuarios. Utiliza una base de datos SQLite, pero está diseñada para ser fácilmente escalable y adaptable a otros motores de base de datos como PostgreSQL o MySQL.
-La API está desarrollada con Flask, SQLAlchemy y JSON Web Tokens (JWT) para garantizar una arquitectura modular, segura y mantenible. Además, se incluye una interfaz frontend básica en HTML y CSS para facilitar el registro e inicio de sesión de usuarios.
+La API está desarrollada con Flask, SQLAlchemy y JSON Web Tokens (JWT) para garantizar una arquitectura modular, segura y mantenible.
 
 ---
 
@@ -13,7 +13,6 @@ La API está desarrollada con Flask, SQLAlchemy y JSON Web Tokens (JWT) para gar
 - Gestión de usuarios: Registro, autenticación y administración de usuarios con protección JWT.
 - Autenticación segura: Uso de tokens JWT con expiración para proteger rutas sensibles.
 - Datos iniciales: Carga automática desde database.sql.
-- Frontend básico: Interfaz web para registro e inicio de sesión de usuarios.
 - Estructura modular: Código organizado para facilitar mantenimiento y escalabilidad.
 
 
@@ -42,10 +41,6 @@ Flujo de autenticación:
 - SQLAlchemy
 - Werkzeug
 - PyJWT
-- Frontend:
-- HTML5
-- CSS3
-- JavaScript (básico para llamadas fetch a la API)
 
 
 ---

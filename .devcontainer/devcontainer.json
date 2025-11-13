@@ -1,15 +1,10 @@
 {
     "name": "ApiCreator",
-    "forwardPorts": [3000, 8000],
+    "forwardPorts": [3000],
     "portsAttributes": {
         "3000": {
             "protocol": "https",
             "label": "Backend API",
-            "onAutoForward": "notify"
-        },
-        "8000": {
-            "protocol": "https",
-            "label": "Frontend",
             "onAutoForward": "notify"
         }
     }
